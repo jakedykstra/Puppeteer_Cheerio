@@ -1,0 +1,134 @@
+[
+  {
+    "name": "sb",
+    "value": "XpcKXMiFmKUdhz99cApBKkpP",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1607483790.232949,
+    "size": 26,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "wd",
+    "value": "1366x768",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1545236916,
+    "size": 10,
+    "httpOnly": false,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "presence",
+    "value": "EDvF3EtimeF1544632116EuserFA21539262652A2EstateFDutF1544632116518CEchFDp_5f1539262652F1CC",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": -1,
+    "size": 97,
+    "httpOnly": false,
+    "secure": true,
+    "session": true
+  },
+  {
+    "name": "c_user",
+    "value": "1539262652",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1552368963.442607,
+    "size": 16,
+    "httpOnly": false,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "datr",
+    "value": "XpcKXMNgeAevbdUUiswotLyD",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1607269985.164045,
+    "size": 28,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "xs",
+    "value": "49%3AkNYn1rnNNuNHEg%3A2%3A1544411788%3A8525%3A2292",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1552368963.442665,
+    "size": 52,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "fr",
+    "value": "1L6rgtIfSY3BT9wQ1.AWXbcIFo3eOWJRtNWKva0G2q95k.BcCpde.l5.FwQ.0.0.BcEKRK.AWWe0X9M",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1552370507.554815,
+    "size": 81,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "dpr",
+    "value": "1.0000000074505806",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1545236913,
+    "size": 21,
+    "httpOnly": false,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "pl",
+    "value": "n",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1552187790.233152,
+    "size": 3,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "spin",
+    "value": "r.4622673_b.trunk_t.1544544285_s.1_v.2_",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1544634286.429002,
+    "size": 43,
+    "httpOnly": true,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "locale",
+    "value": "en_US",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": 1545013771.864907,
+    "size": 11,
+    "httpOnly": false,
+    "secure": true,
+    "session": false
+  },
+  {
+    "name": "act",
+    "value": "1544595453233%2F5",
+    "domain": ".facebook.com",
+    "path": "/",
+    "expires": -1,
+    "size": 20,
+    "httpOnly": false,
+    "secure": true,
+    "session": true
+  }
+]
