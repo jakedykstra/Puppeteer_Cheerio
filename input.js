@@ -1,6 +1,6 @@
 var input = {
-  "username": "jd0523@gmail.com",
-  "password": "Cra2018Scrape"
+  "username": "jdoe19814@gmail.com",
+  "password": "1928Editor"
 }
 
 module.exports = input;

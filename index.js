@@ -5,15 +5,17 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const donorList = require("./donors.js");
 
-const writeStream = fs.createWriteStream('post.csv');
+const writeStream = fs.createWriteStream('post-port-city-employer.csv');
 
 
-fs.createReadStream('./scrape.csv')
+fs.createReadStream('./Port_Concat_Part2.csv')
 .pipe(csv())
 .on('data', function(data){
     try {
-        console.log(data['search query']);
-       donorList.push(data['search query']);
+        console.log(data['Concat with city']);
+        console.log(data['Concat with Employer']);
+       donorList.push(data['Concat with city']);
+       donorList.push(data['Concat with Employer']);
     }
     catch(err) {
     }
@@ -23,7 +25,7 @@ fs.createReadStream('./scrape.csv')
 });  
 
 // write to csv
-writeStream.write(`First, Last, Link, Info, ID\n`);
+writeStream.write(`First, Last, Link, Info, ID, Origin\n`);
 
 const loggedCheck = async (page) => {
     try {
@@ -33,90 +35,6 @@ const loggedCheck = async (page) => {
         return false;
     }
 };
-
-async function list(val, num, page, cookiesStoreKey, browser, fcbCacheStore, userCookies){
-    total = num;
-    // console.log(total);
-    // console.log(val);
-    // console.log(donorList[num]);
-    await page.waitFor(1500);
-    await page.click('._585_');
-    await page.type('._1frb', val)
-    await page.click('._585_');
-    await page.waitForNavigation();
-    await page.waitFor(1500);
-    // if person is in page search
-    await page.click('._5vwz:nth-of-type(3) > a');
-    await page.waitFor(1500);
-    try {
-        await page.waitForSelector('._32mo', {timeout: 1000});
-        await clickToPage(val, num);
-    } catch (error) {
-        // console.log(error);
-        nextUser(val, num);
-    }
-    await list(donorList[0], 1);
-    isLogged = await loggedCheck(page);
-}
-async function clickToPage(val, num, page) {
-    console.log("entering page");
-    await page.click('._32mo');
-    await page.waitForNavigation();
-    await page.waitForSelector('._2iel', 1500);
-    let content = await page.content();
-    var $ = cheerio.load(content);
-    var me = $('._2iel').html();
-    var first = $('._2nlw').html().split(' ')[0]
-    var last = $('._2nlw').html().split(' ')[1]
-    var url = $('._2nlw').attr('href');
-    var initialId = $('._6-6:first-of-type').attr('href');
-    var firstCut = initialId.indexOf('%');
-    var lastCut = initialId.lastIndexOf('%');
-    var id = initialId.slice(firstCut + 3, lastCut);
-    console.log(id);
-    // var location = $('._50f3 > a').html();
-    let location = "info: "
-    // checking location for "works at" or "at" without "worked || former"
-    $('._50f3').each((i, el) => {
-        const info = $(el).text()
-        // console.log(info);
-        if (info.includes('works at') || (info.includes('at') && !(info.includes('former')) && !(info.includes('worked')))){
-            location += (info + "; ");
-            // console.log(location);
-        }
-    })
-    await console.log(`${first}, ${last}, ${url}, ${location}, ${id}`);
-    await writeStream.write(`${first}, ${last}, ${url}, ${location}, ${id} \n`);
-    // isLogged = await loggedCheck(page);
-    if(total === donorList.length){
-        // console.log("done");
-        // console.log(total);
-        // console.log(donorList);
-        // console.log(donorList.length);
-        return;
-    } else {
-        // console.log("next");
-        // console.log(donorList);
-        // console.log(donorList[total]);
-        list(donorList[total], num + 1);
-    }
-    }
-    async function nextUser(val, num, page) {
-        console.log("next user");
-        if(total === donorList.length){
-            // console.log("done");
-            // console.log(total);
-            // console.log(donorList);
-            // console.log(donorList.length);
-            return;
-        } else {
-            // console.log("next");
-            // console.log(donorList);
-            // console.log(donorList[total]);
-            list(donorList[total], num + 1);
-        }
-    }
-    
 
 Apify.main(async () => {
     var listLength = donorList.length;
@@ -131,11 +49,95 @@ Apify.main(async () => {
         console.log('Try to use cookies from cache..')
         await page.setCookie(...userCookies);
         await page.goto('https://facebook.com');
-        await page.waitForNavigation();
-        isLogged = await loggedCheck(page);
-        await list(donorList[0], 1, page, cookiesStoreKey, browser, fcbCacheStore, userCookies);
+        async function list(val, num){
+        // await page.goto('https://www.facebook.com/search/people/?q=people&epa=SERP_TAB')
+        total = num;
+        // console.log(total);
+        // console.log(val);
+        // console.log(donorList[num]);
+        await page.waitFor(2000);
+        await page.click('._585_');
+        await page.type('._1frb', val)
+        await page.waitFor(1000);
+        await page.click('._585_');
+        // await page.waitForNavigation();
+        await page.waitFor(2000);
+        // if person is in page search
+        await page.click('._5vwz:nth-of-type(3) > a');
+        await page.waitFor(2000);
+        try {
+            await page.waitForSelector('._32mo', {timeout: 1500});
+            await clickToPage(val, num);
+        } catch (error) {
+            console.log(error);
+            nextUser(val, num);
         }
-    
+        async function clickToPage(val, num) {
+        console.log("entering page");
+        await page.click('._32mo');
+        await page.waitForNavigation();
+        await page.waitForSelector('._2iel', 2000);
+        let content = await page.content();
+        var $ = cheerio.load(content);
+        var me = $('._2iel').html();
+        var first = $('._2nlw').html().split(' ')[0]
+        var last = $('._2nlw').html().split(' ')[1]
+        var url = $('._2nlw').attr('href');
+        var initialId = $('._6-6:first-of-type').attr('href');
+        var firstCut = initialId.indexOf('%');
+        var lastCut = initialId.lastIndexOf('%');
+        var id = initialId.slice(firstCut + 3, lastCut);
+        console.log(id);
+        // var location = $('._50f3 > a').html();
+        let location = "info: "
+        // checking location for "works at" or "at" without "worked || former"
+        $('._50f3').each((i, el) => {
+            const info = $(el).text()
+            // console.log(info);
+            if (info.includes('works at') || (info.includes('at') && !(info.includes('former')) && !(info.includes('worked')))){
+                location += (info + "; ");
+                // console.log(location);
+            }
+        })
+        await console.log(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}`);
+        await writeStream.write(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}  \n`);
+        // isLogged = await loggedCheck(page);
+        if(total === donorList.length){
+            console.log("done");
+            console.log("List is done");
+            page.goto('http://www.espn.com/');
+            // console.log(total);
+            // console.log(donorList);
+            // console.log(donorList.length);
+            return;
+        } else {
+            console.log("next");
+            // console.log(donorList);
+            // console.log(donorList[total]);
+            list(donorList[total], num + 1);
+        }
+        }
+        }
+        async function nextUser(val, num) {
+            console.log("next user");
+            if(total === donorList.length){
+                // console.log("done");
+                // console.log(total);
+                // console.log(donorList);
+                console.log("List is done");
+                page.goto('http://www.espn.com/');
+                return;
+            } else {
+                // console.log("next");
+                // console.log(donorList);
+                // console.log(donorList[total]);
+                list(donorList[total], num + 1);
+            }
+        }
+        
+        await list(donorList[0], 1);
+        isLogged = await loggedCheck(page);
+    }
 
     if (!isLogged) {
         console.log(`Cookies from cache didn't work, try to login..`);
@@ -144,7 +146,89 @@ Apify.main(async () => {
         await page.type('#pass', login.password);
         await page.click('#loginbutton input');
         await page.waitForNavigation();
-            await list(donorList[0], 1, page, cookiesStoreKey, browser, fcbCacheStore, userCookies);
+        async function list(val, num){
+            // await page.goto('https://www.facebook.com/search/people/?q=people&epa=SERP_TAB')
+            total = num;
+            // console.log(total);
+            // console.log(val);
+            // console.log(donorList[num]);
+            await page.waitFor(2000);
+            await page.click('._585_');
+            await page.type('._1frb', val)
+            await page.click('._585_');
+            await page.waitForNavigation();
+            await page.waitFor(2000);
+            // if person is in page search
+            await page.click('._5vwz:nth-of-type(3) > a');
+            await page.waitFor(2000);
+            try {
+                await page.waitForSelector('._32mo', {timeout: 1500});
+                await clickToPage(val, num);
+            } catch (error) {
+                console.log(error);
+                nextUser(val, num);
+            }
+            async function clickToPage(val, num) {
+            console.log("entering page");
+            await page.click('._32mo');
+            await page.waitForNavigation();
+            await page.waitForSelector('._2iel', 2000);
+            let content = await page.content();
+            var $ = cheerio.load(content);
+            var me = $('._2iel').html();
+            var first = $('._2nlw').html().split(' ')[0]
+            var last = $('._2nlw').html().split(' ')[1]
+            var url = $('._2nlw').attr('href');
+            var initialId = $('._6-6:first-of-type').attr('href');
+            var firstCut = initialId.indexOf('%');
+            var lastCut = initialId.lastIndexOf('%');
+            var id = initialId.slice(firstCut + 3, lastCut);
+            console.log(id);
+            // var location = $('._50f3 > a').html();
+            let location = "info: "
+            // checking location for "works at" or "at" without "worked || former"
+            $('._50f3').each((i, el) => {
+                const info = $(el).text()
+                // console.log(info);
+                if (info.includes('works at') || (info.includes('at') && !(info.includes('former')) && !(info.includes('worked')))){
+                    location += (info + "; ");
+                    // console.log(location);
+                }
+            })
+            await console.log(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}`);
+            await writeStream.write(`${first}, ${last}, ${url}, ${location}, ${id}, ${val} \n`);
+            // isLogged = await loggedCheck(page);
+            if(total === donorList.length){
+                console.log("done");
+                // console.log(total);
+                // console.log(donorList);
+                // console.log(donorList.length);
+                return;
+            } else {
+                // console.log("next");
+                // console.log(donorList);
+                // console.log(donorList[total]);
+                list(donorList[total], num + 1);
+            }
+            }
+            }
+            async function nextUser(val, num) {
+                console.log("next user");
+                if(total === donorList.length){
+                    // console.log("done");
+                    // console.log(total);
+                    // console.log(donorList);
+                    // console.log(donorList.length);
+                    return;
+                } else {
+                    // console.log("next");
+                    // console.log(donorList);
+                    // console.log(donorList[total]);
+                    list(donorList[total], num + 1);
+                }
+            }
+            
+            await list(donorList[0], 1);
             isLogged = await loggedCheck(page);
             }
 
@@ -157,7 +241,8 @@ Apify.main(async () => {
     console.log(`Saving new cookies to cache..`);
     const cookies = await page.cookies();
     await fcbCacheStore.setValue(cookiesStoreKey, cookies);
-    await page.waitFor(100000);
+    await page.waitForRequest('http://www.espn.com/', {timeout: 0});
+    // await page.waitFor(1000000);
 
 //     // for each person on list create url to check
 //     donorList.forEach((element, index) => {
