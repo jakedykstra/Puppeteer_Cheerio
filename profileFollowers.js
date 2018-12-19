@@ -35,29 +35,43 @@ Apify.main(async () => {
       await page.waitFor(1000);
       var url = 'https://www.facebook.com/search/126029561363720/likers?ref=about';
       await page.goto(url, {waitUntil: 'load'});
-
+      await scroller();
     // Get the height of the rendered page
+    async function scroller() {
     const bodyHandle = await page.$('body');
     const { height } = await bodyHandle.boundingBox();
-    console.log(bodyHandle);
     console.log(height);
     await bodyHandle.dispose();
-
-    // Scroll one viewport at a time, pausing to let content load
     const viewportHeight = page.viewport().height;
     let viewportIncr = 0;
     while (viewportIncr + viewportHeight < height) {
       await page.evaluate(_viewportHeight => {
-        window.scrollBy(0, _viewportHeight);
+        window.scrollBy(0, (3 * _viewportHeight));
       }, viewportHeight);
       await wait(20);
       viewportIncr = viewportIncr + viewportHeight;
     }
+    const newBodyHandle = await page.$('body');
+    const { height: newHeight } = await newBodyHandle.boundingBox();
+    console.log(newHeight);
+    if (height === newHeight){
+      console.log("rescroll");
+      scroller();
+    }
+    else {
+      console.log("done");
+      return;
+    }
+  }
+
+
+    // Scroll one viewport at a time, pausing to let content load
+    // const viewportHeight = page.viewport().height;
+    // let viewportIncr = 0;
+
 
     // Scroll back to top
-    await page.evaluate(_ => {
-      window.scrollTo(0, 0);
-    });
+
 
     // Some extra delay to let images load
     await wait(1000);

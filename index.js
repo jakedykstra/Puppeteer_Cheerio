@@ -5,17 +5,18 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const donorList = require("./donors.js");
 
-const writeStream = fs.createWriteStream('post-port-city-employer.csv');
+// fs.appendFile('post-Bradford-city-employer.csv');
+// fs.appendFile('linkOfPosts-Bradford.csv');
 
 
-fs.createReadStream('./Port_Concat_Part2.csv')
+fs.createReadStream('./csvFiles/Bradford_Concat.1.csv')
 .pipe(csv())
 .on('data', function(data){
     try {
-        console.log(data['Concat with city']);
-        console.log(data['Concat with Employer']);
-       donorList.push(data['Concat with city']);
-       donorList.push(data['Concat with Employer']);
+        // console.log(data['concat with city']);
+        // console.log(data['concat with Employer']);
+       donorList.push(data['concat with city']);
+       donorList.push(data['concat with Employer']);
     }
     catch(err) {
     }
@@ -25,7 +26,14 @@ fs.createReadStream('./Port_Concat_Part2.csv')
 });  
 
 // write to csv
-writeStream.write(`First, Last, Link, Info, ID, Origin\n`);
+fs.appendFile('./csvBotWritten/post-Bradford-city-employer.csv', `First, Last, Link, Info, ID, Origin\n`, (err) => {  
+    if (err) throw err;
+    // console.log('Created!');
+});
+fs.appendFile('./csvBotWritten/linkOfPosts-Bradford.csv', `Links, Search \n\n`, (err) => {  
+    if (err) throw err;
+    // console.log('Posts!');
+});
 
 const loggedCheck = async (page) => {
     try {
@@ -55,23 +63,58 @@ Apify.main(async () => {
         // console.log(total);
         // console.log(val);
         // console.log(donorList[num]);
-        await page.waitFor(2000);
+        await page.waitFor(3000);
         await page.click('._585_');
-        await page.type('._1frb', val)
-        await page.waitFor(1000);
+        await page.waitFor(500);
+        await page.type('._1frb', val);
+        await page.waitFor(3000);
         await page.click('._585_');
         // await page.waitForNavigation();
-        await page.waitFor(2000);
+        await page.waitFor(3000);
         // if person is in page search
+        await page.click('._5vwz:nth-of-type(2) > a');
+        try {
+            await page.waitForSelector('._4rmu', {timeout: 2000});
+            await savePosts(val, num);
+        } catch (error) {
+            // console.log(error);
+            console.log("no posts");
+            checkPeople(val, num);
+        }
+        async function savePosts(val, num) {
+            let content = await page.content();
+            var $ = cheerio.load(content);
+            let link = "links: "
+            var linkFiles = $('._4rmu a').attr('href');
+            // console.log(linkFiles);
+            // console.log("linkFiles");
+            $('._4rmu a').each((i, el) => {
+                let linksFiles = $(el).attr('href');
+                // console.log(linksFiles);
+                if (linksFiles){
+                    link += (linksFiles + "; ");
+                }
+            })
+            fs.appendFile('./csvBotWritten/linkOfPosts-Bradford.csv', `${val}, ${link}\n\n`, (err) => {  
+                if (err) throw err;
+                // console.log('Written!');
+                checkPeople(val, num)
+            });
+
+        }
+        async function checkPeople(val, num) {
+        await page.waitFor(1000);
         await page.click('._5vwz:nth-of-type(3) > a');
-        await page.waitFor(2000);
+        await page.waitFor(2500);
         try {
             await page.waitForSelector('._32mo', {timeout: 1500});
             await clickToPage(val, num);
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+            console.log("No people");
             nextUser(val, num);
         }
+    }
         async function clickToPage(val, num) {
         console.log("entering page");
         await page.click('._32mo');
@@ -80,8 +123,13 @@ Apify.main(async () => {
         let content = await page.content();
         var $ = cheerio.load(content);
         var me = $('._2iel').html();
-        var first = $('._2nlw').html().split(' ')[0]
-        var last = $('._2nlw').html().split(' ')[1]
+        var first = $('._2nlw').html().split(' ')[0];
+        var last;
+        if ($('._2nlw').html().split(' ').length === 3){
+            last = $('._2nlw').html().split(' ')[2];
+        } else {
+            last = $('._2nlw').html().split(' ')[1];
+        }
         var url = $('._2nlw').attr('href');
         var initialId = $('._6-6:first-of-type').attr('href');
         var firstCut = initialId.indexOf('%');
@@ -100,7 +148,10 @@ Apify.main(async () => {
             }
         })
         await console.log(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}`);
-        await writeStream.write(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}  \n`);
+        await fs.appendFile('./csvBotWritten/post-Bradford-city-employer.csv', `${val}, ${first}, ${last}, ${url}, ${location}, ${id}  \n`, (err) => {  
+            if (err) throw err;
+            console.log('Big Write up!');
+        });
         // isLogged = await loggedCheck(page);
         if(total === donorList.length){
             console.log("done");
@@ -196,7 +247,7 @@ Apify.main(async () => {
                 }
             })
             await console.log(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}`);
-            await writeStream.write(`${first}, ${last}, ${url}, ${location}, ${id}, ${val} \n`);
+            await fs.appendFile('./csvBotWritten/post-Bradford-city-employer.csv', `${first}, ${last}, ${url}, ${location}, ${id}, ${val}  \n`);
             // isLogged = await loggedCheck(page);
             if(total === donorList.length){
                 console.log("done");

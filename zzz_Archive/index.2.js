@@ -1,9 +1,9 @@
 const Apify = require('apify');
 const cheerio = require('cheerio');
-const login = require('./input.js');
+const login = require('../input.js');
 const fs = require('fs');
 const csv = require('csv-parser');
-const donorList = require("./donors.js");
+const donorList = require("../donors.js");
 
 const writeStream = fs.createWriteStream('post.csv');
 
