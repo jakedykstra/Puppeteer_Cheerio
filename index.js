@@ -60,16 +60,12 @@ Apify.main(async () => {
         async function list(val, num){
         // await page.goto('https://www.facebook.com/search/people/?q=people&epa=SERP_TAB')
         total = num;
-        // console.log(total);
-        // console.log(val);
-        // console.log(donorList[num]);
         await page.waitFor(3000);
         await page.click('._585_');
         await page.waitFor(500);
         await page.type('._1frb', val);
         await page.waitFor(3000);
         await page.click('._585_');
-        // await page.waitForNavigation();
         await page.waitFor(3000);
         // if person is in page search
         await page.click('._5vwz:nth-of-type(2) > a');
@@ -86,8 +82,6 @@ Apify.main(async () => {
             var $ = cheerio.load(content);
             let link = "links: "
             var linkFiles = $('._4rmu a').attr('href');
-            // console.log(linkFiles);
-            // console.log("linkFiles");
             $('._4rmu a').each((i, el) => {
                 let linksFiles = $(el).attr('href');
                 // console.log(linksFiles);
@@ -116,19 +110,24 @@ Apify.main(async () => {
         }
     }
         async function clickToPage(val, num) {
-        console.log("entering page");
+        // enter user page
         await page.click('._32mo');
+
+        // wait for page to load before using cheerio
         await page.waitForNavigation();
         await page.waitForSelector('._2iel', 2000);
+
+        // gather content
         let content = await page.content();
         var $ = cheerio.load(content);
         var me = $('._2iel').html();
         var first = $('._2nlw').html().split(' ')[0];
         var last;
-        if ($('._2nlw').html().split(' ').length === 3){
-            last = $('._2nlw').html().split(' ')[2];
+        var nameArr = $('._2nlw').html().split(' ');
+        if (nameArr.length <= 3){
+            last = nameArr[(nameArr.length - 1)];
         } else {
-            last = $('._2nlw').html().split(' ')[1];
+            last = nameArr[1];
         }
         var url = $('._2nlw').attr('href');
         var initialId = $('._6-6:first-of-type').attr('href');
@@ -136,7 +135,6 @@ Apify.main(async () => {
         var lastCut = initialId.lastIndexOf('%');
         var id = initialId.slice(firstCut + 3, lastCut);
         console.log(id);
-        // var location = $('._50f3 > a').html();
         let location = "info: "
         // checking location for "works at" or "at" without "worked || former"
         $('._50f3').each((i, el) => {
@@ -157,14 +155,9 @@ Apify.main(async () => {
             console.log("done");
             console.log("List is done");
             page.goto('http://www.espn.com/');
-            // console.log(total);
-            // console.log(donorList);
-            // console.log(donorList.length);
             return;
         } else {
             console.log("next");
-            // console.log(donorList);
-            // console.log(donorList[total]);
             list(donorList[total], num + 1);
         }
         }
@@ -172,16 +165,10 @@ Apify.main(async () => {
         async function nextUser(val, num) {
             console.log("next user");
             if(total === donorList.length){
-                // console.log("done");
-                // console.log(total);
-                // console.log(donorList);
                 console.log("List is done");
                 page.goto('http://www.espn.com/');
                 return;
             } else {
-                // console.log("next");
-                // console.log(donorList);
-                // console.log(donorList[total]);
                 list(donorList[total], num + 1);
             }
         }
@@ -198,11 +185,7 @@ Apify.main(async () => {
         await page.click('#loginbutton input');
         await page.waitForNavigation();
         async function list(val, num){
-            // await page.goto('https://www.facebook.com/search/people/?q=people&epa=SERP_TAB')
             total = num;
-            // console.log(total);
-            // console.log(val);
-            // console.log(donorList[num]);
             await page.waitFor(2000);
             await page.click('._585_');
             await page.type('._1frb', val)
@@ -235,9 +218,7 @@ Apify.main(async () => {
             var lastCut = initialId.lastIndexOf('%');
             var id = initialId.slice(firstCut + 3, lastCut);
             console.log(id);
-            // var location = $('._50f3 > a').html();
             let location = "info: "
-            // checking location for "works at" or "at" without "worked || former"
             $('._50f3').each((i, el) => {
                 const info = $(el).text()
                 // console.log(info);
@@ -251,14 +232,8 @@ Apify.main(async () => {
             // isLogged = await loggedCheck(page);
             if(total === donorList.length){
                 console.log("done");
-                // console.log(total);
-                // console.log(donorList);
-                // console.log(donorList.length);
                 return;
             } else {
-                // console.log("next");
-                // console.log(donorList);
-                // console.log(donorList[total]);
                 list(donorList[total], num + 1);
             }
             }
@@ -266,15 +241,8 @@ Apify.main(async () => {
             async function nextUser(val, num) {
                 console.log("next user");
                 if(total === donorList.length){
-                    // console.log("done");
-                    // console.log(total);
-                    // console.log(donorList);
-                    // console.log(donorList.length);
                     return;
                 } else {
-                    // console.log("next");
-                    // console.log(donorList);
-                    // console.log(donorList[total]);
                     list(donorList[total], num + 1);
                 }
             }
@@ -292,72 +260,7 @@ Apify.main(async () => {
     console.log(`Saving new cookies to cache..`);
     const cookies = await page.cookies();
     await fcbCacheStore.setValue(cookiesStoreKey, cookies);
-    await page.waitForRequest('http://www.espn.com/', {timeout: 0});
-    // await page.waitFor(1000000);
-
-//     // for each person on list create url to check
-//     donorList.forEach((element, index) => {
-//         var splitElements = element.split(" ");
-//         console.log(splitElements);
-//         console.log(index);
-//         var query;
-//         splitElements.forEach(element => {
-//         if (query === undefined) {
-//             query = element;
-//         } else {
-//             query += ("%20" + element);
-//         }
-//     })
-//         // url created from loops
-//         var url = `https://www.facebook.com/search/people/?q=${query}&epa=SERP_TAB`;
-//         console.log(url);
-       
-// })    
-
-// const page2 = await browser.newPage();
-// await page2.setCookie(...cookies);
-// await page2.goto(
-//     "https://www.facebook.com/search/people/?q=joan%20bennett%20American%20Canyon&epa=SERP_TAB"); // Opens page as logged user
-// await request('http://codedemos.com/sampleblog', (error, response, html) => {
-// if (!error && response.statusCode == 200) {
-// const $ = cheerio.load(html);
-// const requestList = new Apify.RequestList({
-//     sources: [
-//         { url: 'https://www.facebook.com/search/people/?q=joan%20bennett%20American%20Canyon&epa=SERP_TAB' },
-//         // { url: 'http://www.example.com/page-2' },
-//     ],
-//   });
-//   await requestList.initialize();
-
-
-//   const crawler = new Apify.PuppeteerCrawler({
-//     requestList,
-//     handlePageFunction: async ({ page, request }) => {
-//         // This function is called to extract data from a single web page
-//         // 'page' is an instance of Puppeteer.Page with page.goto(request.url) already called
-//         // 'request' is an instance of Request class with information about the page to load
-//         await Apify.pushData({
-//             title: await page.title(),
-//             url: request.url,
-//             succeeded: true,
-//         })
-//     },
-//     handleFailedRequestFunction: async ({ request }) => {
-//         // This function is called when crawling of a request failed too many time
-//         await Apify.pushData({
-//             url: request.url,
-//             succeeded: false,
-//             errors: request.errorMessages,
-//         })
-//     },
-// });
-
-// await crawler.run();
-//Write Row To CSV
-// writeStream.write(`${title}, ${link}, ${date} \n`);
-// }
-// })
-// await browser.close();
+    await page.waitForRequest('http://www.google.com/', {timeout: 0});
 
 console.log('Done.');
 
