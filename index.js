@@ -5,17 +5,14 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const donorList = require("./donors.js");
 
-// fs.appendFile('post-Bradford-city-employer.csv');
-// fs.appendFile('linkOfPosts-Bradford.csv');
 
-
-fs.createReadStream('./csvFiles/Bradford_Concat.1.csv')
+fs.createReadStream('./csvFiles/JohnDoe_Concat.1.csv')
 .pipe(csv())
 .on('data', function(data){
     try {
         // console.log(data['concat with city']);
         // console.log(data['concat with Employer']);
-       donorList.push(data['concat with city']);
+       donorList.push(data['Concat with City']);
        donorList.push(data['concat with Employer']);
     }
     catch(err) {
@@ -26,11 +23,11 @@ fs.createReadStream('./csvFiles/Bradford_Concat.1.csv')
 });  
 
 // write to csv
-fs.appendFile('./csvBotWritten/post-Bradford-city-employer.csv', `First, Last, Link, Info, ID, Origin\n`, (err) => {  
+fs.appendFile('./csvBotWritten/post-JohnDoe-city-employer.csv', `First, Last, Link, Info, ID, Origin\n`, (err) => {  
     if (err) throw err;
     // console.log('Created!');
 });
-fs.appendFile('./csvBotWritten/linkOfPosts-Bradford.csv', `Links, Search \n\n`, (err) => {  
+fs.appendFile('./csvBotWritten/linkOfPosts-JohnDoe.csv', `Links, Search \n\n`, (err) => {  
     if (err) throw err;
     // console.log('Posts!');
 });
@@ -89,7 +86,7 @@ Apify.main(async () => {
                     link += (linksFiles + "; ");
                 }
             })
-            fs.appendFile('./csvBotWritten/linkOfPosts-Bradford.csv', `${val}, ${link}\n\n`, (err) => {  
+            fs.appendFile('./csvBotWritten/linkOfPosts-JohnDoe.csv', `${val}, ${link}\n\n`, (err) => {  
                 if (err) throw err;
                 // console.log('Written!');
                 checkPeople(val, num)
@@ -228,7 +225,7 @@ Apify.main(async () => {
                 }
             })
             await console.log(`${first}, ${last}, ${url}, ${location}, ${id}, ${val}`);
-            await fs.appendFile('./csvBotWritten/post-Bradford-city-employer.csv', `${first}, ${last}, ${url}, ${location}, ${id}, ${val}  \n`);
+            await fs.appendFile('./csvBotWritten/post-JohnDoe-city-employer.csv', `${first}, ${last}, ${url}, ${location}, ${id}, ${val}  \n`);
             // isLogged = await loggedCheck(page);
             if(total === donorList.length){
                 console.log("done");
